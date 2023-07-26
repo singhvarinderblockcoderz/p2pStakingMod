@@ -17,6 +17,8 @@ export function getServerSideProps(context) {
     props:{
       userId:query.userId,
       id:query.id,
+      startDate:query.startDate,
+      endDate:query.endDate,
     }
   }
 }

@@ -11,12 +11,19 @@ import ContractInterface from "../stakingApprove-abi.json"
 import ContractInterface1 from "../stake&Withdraw-abi.json"
 
 const Withdraw = (props) => {
+
+
+
   console.log(props?.props?.id, "to get props here");
   console.log(props?.props?.userId, "to get props here");
-
+  console.log(props?.props?.startDate,props?.props?.endDate,"to get start Date")
+  
   const router = useRouter();
+  const [currentDate, setCurrentDate] = useState()
   const [show, setShow] = useState(false);
   const [show1, setShow1] = useState(false);
+  const [show2, setShow2] = useState(false);
+  const [show3, setShow3] = useState(false);
   const [userId, setUserId] = useState("");
   const [amount, setAmount] = useState("");
   const { address } = useAccount();
@@ -26,7 +33,13 @@ const Withdraw = (props) => {
   const [open, setOpen] = useState(false);
   const [added, setAdded] = useState(0);
   const [tx, setTx] = useState(false);
-
+  useEffect(()=>{
+const now = new Date()
+console.log(now.toLocaleDateString(),"current Date")
+setCurrentDate(now.toLocaleDateString())
+console.log((new Date(parseFloat(props?.props?.startDate) *1000).toLocaleDateString()),"current")
+  },[])
+  
   const { write: Approval } = useContractWrite({
     mode: "args",
     address: "0x45d12b59b965880c9F8A38eFdBA3075631e70Caf",
@@ -70,17 +83,44 @@ const Withdraw = (props) => {
       let tx = await data.wait();
       setOpen(false);
       console.log(tx, "tx");
-      getData();
+      if (tx.status == 1) {
+        setTx(true);
+        setOpen(false);
+        getData();
+        return;
+      }
+      console.log(currentDate < props?.props?.startDate ,currentDate , (new Date(props?.props?.startDate)?.getTime()/1000),'hello' )
+      if(tx.status == 0 && currentDate < (new Date(parseFloat(props?.props?.startDate) *1000).toLocaleDateString())){
+        setShow2(true);
+        setShow1(false);
+        setShow(false);
+        return;
+      }
+      if (tx.status == 0 && props?.props.startDate == props?.props?.endDate) {
+        setOpen(false)
+        setShow1(true)
+        setShow(false)
+        return;
+      }
+      if (tx.status == 0) {
+        setOpen(false)
+        setShow(true)
+        setShow1(false);
+        return;
+      }
+     
     },
+    
   });
 
   async function getData() {
     setOpen(true);
     try {
       const provider = new ethers.providers.JsonRpcProvider(
-        "https://polygon-mumbai-bor.publicnode.com"
+        // "https://polygon-mumbai-bor.publicnode.com"
+        "https://rpc-mumbai.maticvigil.com"
       );
-      const signer = provider.getSigner();
+      // const signer = provider.getSigner();
       console.log(props?.props?.id, "helloooooo");
       const daiContract = new ethers.Contract(
         props?.props?.id,
@@ -146,11 +186,8 @@ const Withdraw = (props) => {
       if (tx.status == 1) {
         setTx(true);
         setOpen(false);
+        setShow3(true)
         return;
-      }
-      if (tx.status == 0) {
-        setOpen(false);
-        setTx(false);
       }
     },
   });
@@ -161,7 +198,8 @@ const Withdraw = (props) => {
     Withdraw();
   }
 
-  return (
+
+ return (
     <>
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -283,7 +321,7 @@ const Withdraw = (props) => {
         className="staking-modal"
       >
         <Modal.Body>
-          <h3>
+          <h3 style={{textAlign:"center"}}>
             Fail with error:- 'You cannot stake more than max stake of user!'
           </h3>
         </Modal.Body>
@@ -299,7 +337,7 @@ const Withdraw = (props) => {
         </Modal.Footer>
       </Modal>
 
-      {/* <Modal
+      <Modal
         closeButton={false}
         blur
         aria-labelledby="modal-title"
@@ -307,7 +345,7 @@ const Withdraw = (props) => {
         className="staking-modal"
       >
         <Modal.Body>
-        <h3>Minimum User Token Stake</h3>
+        <h3 style={{textAlign:"center"}}>Please check start and end date to stake</h3>
 
         </Modal.Body>
         <Modal.Footer>
@@ -315,13 +353,61 @@ const Withdraw = (props) => {
             className="connect-wallet"
             auto
             flat
-            onPress={() => setShow(false)}
+            onPress={() => setShow1(false)}
           >
             Close
           </Button>
           
         </Modal.Footer>
-      </Modal> */}
+      </Modal>
+
+      <Modal
+        closeButton={false}
+        blur
+        aria-labelledby="modal-title"
+        open={show2}
+        className="staking-modal"
+      >
+        <Modal.Body>
+        <h3 style={{textAlign:"center"}}>Staking Not Started Yet</h3>
+
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            className="connect-wallet"
+            auto
+            flat
+            onPress={() => setShow2(false)}
+          >
+            Close
+          </Button>
+          
+        </Modal.Footer>
+      </Modal>
+
+      <Modal
+        closeButton={false}
+        blur
+        aria-labelledby="modal-title"
+        open={show3}
+        className="staking-modal"
+      >
+        <Modal.Body>
+        <h3 style={{textAlign:"center"}}>Withdraw Successfull</h3>
+
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            className="connect-wallet"
+            auto
+            flat
+            onPress={() => router.push("/dashboard")}
+          >
+            ok
+          </Button>
+          
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

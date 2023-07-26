@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useContractWrite, useContractEvent } from "wagmi";
 import { parseEther } from "viem";
-import ContractInterface from "../token-abi1.json"
+import ContractInterface from "../token-abi1.json";
 import { Modal, Button, Table } from "@nextui-org/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
-console.log(ContractInterface,"abi")
-import DatePicker from 'rsuite/DatePicker';
+console.log(ContractInterface, "abi");
+import DatePicker from "rsuite/DatePicker";
 
 const Dashboard = () => {
   const [show, setShow] = useState(false);
@@ -24,8 +24,9 @@ const Dashboard = () => {
   const [open, setOpen] = useState(false);
   const dataFetchedRef = useRef(false);
   const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("")
-
+  const [endDate, setEndDate] = useState("");
+  const [startLeft, setStartLeft] = useState();
+  const [endLeft, setEndLeft] = useState()
 
   const { write: write } = useContractWrite({
     mode: "args",
@@ -41,16 +42,16 @@ const Dashboard = () => {
       parseEther(`${min}`),
       parseEther(`${max}`),
       parseEther(`${total}`),
-      (new Date(startDate)?.getTime()/1000),
-      (new Date(endDate)?.getTime()/1000),
+      new Date(startDate)?.getTime() / 1000,
+      new Date(endDate)?.getTime() / 1000,
     ],
     onError(error) {
       console.log(error, "error");
-      setOpen(false)
+      setOpen(false);
     },
     async onSuccess(data) {
       setOpen(true);
-      setShow(false)
+      setShow(false);
       console.log(data, "data");
       let tx = await data.wait();
       console.log(tx, "tx");
@@ -64,7 +65,10 @@ const Dashboard = () => {
       const response = res.data;
       console.log(response, "to get response from api");
       setTotalData(response?.data?.data?.data);
-      setTotalStaking((response?.data?.data?.data).length)
+      console.log(new Date(parseFloat(response.data.data.data[0].endDate)*1000).toISOString()?.slice(0,-4),"endLeft")
+      setStartLeft(new Date(parseFloat(response.data.data.data[0].startDate)*1000).toISOString()?.slice(0,-5))
+      setEndLeft(new Date(parseFloat(response.data.data.data[0].endDate)*1000).toISOString()?.slice(0,-5))
+      setTotalStaking((response?.data?.data?.data).length);
     } catch (err) {
       console.log(err, "err");
     }
@@ -75,10 +79,49 @@ const Dashboard = () => {
     getData();
   }, []);
 
+  console.log(new Date(startDate)?.getTime() / 1000, "startTme");
 
-  console.log((new Date(startDate)?.getTime()/1000), "startTme")
+  // const getTimeDifference = () => {
+  //   console.log(startLeft,endLeft,"getleft")
+  //   console.log(Date.parse(startLeft),"parseStart")
+  //   const difference = Date.parse(endLeft)- Date.parse(startLeft);
+  //   console.log((new Date(difference)?.getTime()),"diff")
+  //   const timeLeft = {};
+
+  //   if (difference > 0) {
+  //     timeLeft.days = Math.floor(difference / (1000 * 60 * 60 * 24));
+  //     timeLeft.hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+  //     timeLeft.minutes = Math.floor((difference / 1000 / 60) % 60);
+  //     timeLeft.seconds = Math.floor((difference / 1000) % 60);
+  //   } else {
+  //     // Timer expired
+  //     timeLeft.days = 0;
+  //     timeLeft.hours = 0;
+  //     timeLeft.minutes = 0;
+  //     timeLeft.seconds = 0;
+  //   }
+
+  //   return timeLeft;
+  // };
+
+  // const [timeLeft, setTimeLeft] = useState(getTimeDifference());
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setTimeLeft(getTimeDifference());
+  //   }, 1000);
+
+  //   // Clear the interval when the component is unmounted
+  //   return () => clearInterval(interval);
+  // }, [startLeft, endLeft]);
+
+
   return (
     <>
+     {/* <div>
+      {timeLeft.days} days, {timeLeft.hours} hours, {timeLeft.minutes} minutes, {timeLeft.seconds} seconds left
+    </div> */}
+  
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={open}
@@ -119,24 +162,42 @@ const Dashboard = () => {
                     <Table.Cell>{id + 1}</Table.Cell>
                     <Table.Cell>{item?.duration}</Table.Cell>
                     <Table.Cell>{Math.floor(item?.rateOfInterest)}</Table.Cell>
-                    <Table.Cell>{Math.floor(item?.minUserTokenStake)}</Table.Cell>
-                    <Table.Cell>{Math.floor(item?.maxUserTokenStake)}</Table.Cell>
-                    <Table.Cell>{Math.floor(item?.totalTokensForStake)}</Table.Cell>
+                    <Table.Cell>
+                      {Math.floor(item?.minUserTokenStake)}
+                    </Table.Cell>
+                    <Table.Cell>
+                      {Math.floor(item?.maxUserTokenStake)}
+                    </Table.Cell>
+                    <Table.Cell>
+                      {Math.floor(item?.totalTokensForStake)}
+                    </Table.Cell>
                     <Table.Cell>
                       <Link
                         href={`https://mumbai.polygonscan.com/address/${item?.contractAddress}`}
                         target="_blank"
-                        >
+                      >
                         {item?.contractAddress}
                       </Link>
                     </Table.Cell>
-                    
-                        <Table.Cell>{new Date(parseFloat(item?.startDate)*1000).toLocaleString()}</Table.Cell>
-                        <Table.Cell>{new Date(parseFloat(item?.endDate)*1000).toLocaleString()}</Table.Cell>
+
+                    <Table.Cell>
+                      {new Date(
+                        parseFloat(item?.startDate) * 1000
+                      ).toLocaleString()}
+                    </Table.Cell>
+                    <Table.Cell>
+                      {new Date(
+                        parseFloat(item?.endDate) * 1000
+                      ).toLocaleString()}
+                    </Table.Cell>
                     <Table.Cell>
                       <button
                         className="connect-wallet"
-                        onClick={() => router.push(`/staking/${item?.contractAddress}?userId=${item?.id}`)}
+                        onClick={() =>
+                          router.push(
+                            `/staking/${item?.contractAddress}?userId=${item?.id}&&startDate=${item?.startDate}&&endDate=${item?.endDate}`
+                          )
+                        }
                       >
                         Details
                       </button>
@@ -186,7 +247,7 @@ const Dashboard = () => {
               setEndDate(e.target.value);
             }}
           />
-          <br/>
+          <br />
           <label htmlFor="minUser">Min User</label>
           <input
             type="text"
@@ -228,4 +289,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
