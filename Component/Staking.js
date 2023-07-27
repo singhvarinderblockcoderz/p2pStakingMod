@@ -7,19 +7,13 @@ import { Input, Spacer, Button, Table } from "@nextui-org/react";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Modal } from "@nextui-org/react";
-import ContractInterface from "../stakingApprove-abi.json"
-import ContractInterface1 from "../stake&Withdraw-abi.json"
+import ContractInterface from "../stakingApprove-abi.json";
+import ContractInterface1 from "../stake&Withdraw-abi.json";
+import { Tooltip } from "@nextui-org/react";
 
 const Withdraw = (props) => {
-
-
-
-  console.log(props?.props?.id, "to get props here");
-  console.log(props?.props?.userId, "to get props here");
-  console.log(props?.props?.startDate,props?.props?.endDate,"to get start Date")
-  
   const router = useRouter();
-  const [currentDate, setCurrentDate] = useState()
+  const [currentDate, setCurrentDate] = useState();
   const [show, setShow] = useState(false);
   const [show1, setShow1] = useState(false);
   const [show2, setShow2] = useState(false);
@@ -33,13 +27,15 @@ const Withdraw = (props) => {
   const [open, setOpen] = useState(false);
   const [added, setAdded] = useState(0);
   const [tx, setTx] = useState(false);
-  useEffect(()=>{
-const now = new Date()
-console.log(now.toLocaleDateString(),"current Date")
-setCurrentDate(now.toLocaleDateString())
-console.log((new Date(parseFloat(props?.props?.startDate) *1000).toLocaleDateString()),"current")
-  },[])
+  console.log(props?.props?.id, "to get props here");
+  console.log(props?.props?.userId, "to get props here");
+  console.log(
+    props?.props?.startDate,
+    props?.props?.endDate,
+    "to get start Date"
+  );
   
+
   const { write: Approval } = useContractWrite({
     mode: "args",
     address: "0x45d12b59b965880c9F8A38eFdBA3075631e70Caf",
@@ -89,38 +85,42 @@ console.log((new Date(parseFloat(props?.props?.startDate) *1000).toLocaleDateStr
         getData();
         return;
       }
-      console.log(currentDate < props?.props?.startDate ,currentDate , (new Date(props?.props?.startDate)?.getTime()/1000),'hello' )
-      if(tx.status == 0 && currentDate < (new Date(parseFloat(props?.props?.startDate) *1000).toLocaleDateString())){
-        setShow2(true);
-        setShow1(false);
-        setShow(false);
-        return;
-      }
-      if (tx.status == 0 && props?.props.startDate == props?.props?.endDate) {
-        setOpen(false)
-        setShow1(true)
-        setShow(false)
-        return;
-      }
+      // if (
+      //   tx.status == 0 &&
+      //   new Date().toLocaleString() <
+      //     new Date(parseFloat(props?.props?.startDate) * 1000).toLocaleString()
+      // ) {
+      //   setShow2(true);
+      //   setShow1(false);
+      //   setShow(false);
+      //   return;
+      // }
+      // if (
+      //   tx.status == 0 &&
+      //   new Date().toLocaleString() >
+      //     new Date(parseFloat(props?.props?.endDate) * 1000).toLocaleString()
+      // ) {
+      //   setOpen(false);
+      //   setShow1(true);
+      //   setShow(false);
+      //   return;
+      // }
+
       if (tx.status == 0) {
-        setOpen(false)
-        setShow(true)
+        setOpen(false);
+        setShow(true);
         setShow1(false);
         return;
       }
-     
     },
-    
   });
 
   async function getData() {
     setOpen(true);
     try {
       const provider = new ethers.providers.JsonRpcProvider(
-        // "https://polygon-mumbai-bor.publicnode.com"
         "https://rpc-mumbai.maticvigil.com"
       );
-      // const signer = provider.getSigner();
       console.log(props?.props?.id, "helloooooo");
       const daiContract = new ethers.Contract(
         props?.props?.id,
@@ -175,6 +175,8 @@ console.log((new Date(parseFloat(props?.props?.startDate) *1000).toLocaleDateStr
 
     onError(error) {
       console.log(error, "error");
+      // setShow2(true)
+      // return;
     },
     async onSuccess(data) {
       setOpen(true);
@@ -186,7 +188,7 @@ console.log((new Date(parseFloat(props?.props?.startDate) *1000).toLocaleDateStr
       if (tx.status == 1) {
         setTx(true);
         setOpen(false);
-        setShow3(true)
+        setShow3(true);
         return;
       }
     },
@@ -198,8 +200,7 @@ console.log((new Date(parseFloat(props?.props?.startDate) *1000).toLocaleDateStr
     Withdraw();
   }
 
-
- return (
+  return (
     <>
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -214,6 +215,7 @@ console.log((new Date(parseFloat(props?.props?.startDate) *1000).toLocaleDateStr
           <Input
             bordered
             className="input-text"
+            disabled
             // onChange={(e) => setUserId(e.target.value)}
             value={props?.props?.userId}
           />
@@ -227,9 +229,39 @@ console.log((new Date(parseFloat(props?.props?.startDate) *1000).toLocaleDateStr
           />
           <Spacer y={1.5} />
           <div className="staking-submitDiv">
-            <Button className="connect-wallet" onClick={() => Approval()}>
-              Submit
-            </Button>
+            {new Date().toLocaleString() <
+              new Date(
+                parseFloat(props?.props?.startDate) * 1000
+              ).toLocaleString() ||
+            new Date().toLocaleString() >
+              new Date(
+                parseFloat(props?.props?.endDate) * 1000
+              ).toLocaleString() ? (
+              <Tooltip
+                content={
+                  (new Date().toLocaleString() <
+                    new Date(
+                      parseFloat(props?.props?.startDate) * 1000
+                    ).toLocaleString() &&
+                    "Staking Not Started Yet") ||
+                  (new Date().toLocaleString() >
+                    new Date(
+                      parseFloat(props?.props?.endDate) * 1000
+                    ).toLocaleString() &&
+                    "Staking Time is Over")
+                }
+                rounded
+                color="error"
+              >
+                <Button className="connect-wallet2" disabled> 
+                  Submit
+                </Button>
+              </Tooltip>
+            ) : (
+              <Button className="connect-wallet" onClick={() => Approval()}>
+                Submit
+              </Button>
+            )}
           </div>
         </div>
         <hr className="division" />
@@ -321,7 +353,7 @@ console.log((new Date(parseFloat(props?.props?.startDate) *1000).toLocaleDateStr
         className="staking-modal"
       >
         <Modal.Body>
-          <h3 style={{textAlign:"center"}}>
+          <h3 style={{ textAlign: "center" }}>
             Fail with error:- 'You cannot stake more than max stake of user!'
           </h3>
         </Modal.Body>
@@ -337,7 +369,7 @@ console.log((new Date(parseFloat(props?.props?.startDate) *1000).toLocaleDateStr
         </Modal.Footer>
       </Modal>
 
-      <Modal
+      {/* <Modal
         closeButton={false}
         blur
         aria-labelledby="modal-title"
@@ -345,8 +377,7 @@ console.log((new Date(parseFloat(props?.props?.startDate) *1000).toLocaleDateStr
         className="staking-modal"
       >
         <Modal.Body>
-        <h3 style={{textAlign:"center"}}>Please check start and end date to stake</h3>
-
+          <h3 style={{ textAlign: "center" }}>Staking Time is Over</h3>
         </Modal.Body>
         <Modal.Footer>
           <Button
@@ -357,9 +388,8 @@ console.log((new Date(parseFloat(props?.props?.startDate) *1000).toLocaleDateStr
           >
             Close
           </Button>
-          
         </Modal.Footer>
-      </Modal>
+      </Modal> */}
 
       <Modal
         closeButton={false}
@@ -369,8 +399,7 @@ console.log((new Date(parseFloat(props?.props?.startDate) *1000).toLocaleDateStr
         className="staking-modal"
       >
         <Modal.Body>
-        <h3 style={{textAlign:"center"}}>Staking Not Started Yet</h3>
-
+          <h3 style={{ textAlign: "center" }}>You have already withdraw this stake</h3>
         </Modal.Body>
         <Modal.Footer>
           <Button
@@ -381,7 +410,6 @@ console.log((new Date(parseFloat(props?.props?.startDate) *1000).toLocaleDateStr
           >
             Close
           </Button>
-          
         </Modal.Footer>
       </Modal>
 
@@ -393,8 +421,7 @@ console.log((new Date(parseFloat(props?.props?.startDate) *1000).toLocaleDateStr
         className="staking-modal"
       >
         <Modal.Body>
-        <h3 style={{textAlign:"center"}}>Withdraw Successfull</h3>
-
+          <h3 style={{ textAlign: "center" }}>Withdraw Successfull</h3>
         </Modal.Body>
         <Modal.Footer>
           <Button
@@ -405,7 +432,6 @@ console.log((new Date(parseFloat(props?.props?.startDate) *1000).toLocaleDateStr
           >
             ok
           </Button>
-          
         </Modal.Footer>
       </Modal>
     </>

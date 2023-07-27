@@ -3,6 +3,12 @@ body {
   background: #1d2328;
 }
 
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
 /* dashBoard */
 .createStaking-Button{
   float: right;
@@ -198,4 +204,55 @@ body {
 
 .nextui-c-iDzHRq-drcJWu-autoMargin-true > * {
   margin-bottom: 0rem !important;
+}
+
+.connect-wallet1 {
+  background: linear-gradient(
+    68deg,
+    rgba(29, 35, 40, 1) 0%,
+    rgba(29, 35, 40, 1) 21%,
+    rgba(45, 52, 57, 1) 100%
+  ) !important;
+  color: white !important;
+  padding: 3px 15x !important;
+  border: none !important;
+  border-radius: 25px !important;
+  font-size: 14px !important;
+  font-weight: bold !important;
+  border: 1px solid #1f73f253 !important;
+  position: relative !important;
+  box-shadow: rgb(255 255 255 / 0%) 0px -19px 0px,
+    rgb(182 182 182 / 12%) 0px -9px 27px, rgb(0 0 0 / 38%) 0px 8px 12px,
+    rgb(255 255 255 / 0%) 0px 12px 13px, rgb(255 255 255 / 0%) 0px -60px 5px !important;
+  white-space: nowrap;
+  /* cursor: pointer; */
+}
+
+.span{
+ float: right;
+}
+
+.connect-wallet2 {
+  background: #b30000 !important;
+  color: white !important;
+  padding: 3px 15x !important;
+  border: none !important;
+  border-radius: 25px !important;
+  font-size: 14px !important;
+  font-weight: bold !important;
+  border: 1px solid #1f73f253 !important;
+  position: relative !important;
+  box-shadow: rgb(255 255 255 / 0%) 0px -19px 0px,
+    rgb(182 182 182 / 12%) 0px -9px 27px, rgb(0 0 0 / 38%) 0px 8px 12px,
+    rgb(255 255 255 / 0%) 0px 12px 13px, rgb(255 255 255 / 0%) 0px -60px 5px !important;
+  white-space: nowrap;
+  /* cursor: pointer; */
+}
+
+.span{
+ float: right;
+}
+
+.nextui-c-jeuecp:disabled{
+  color: black !important;
 }

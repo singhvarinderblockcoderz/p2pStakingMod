@@ -26,7 +26,7 @@ const Dashboard = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [startLeft, setStartLeft] = useState();
-  const [endLeft, setEndLeft] = useState()
+  const [endLeft, setEndLeft] = useState();
 
   const { write: write } = useContractWrite({
     mode: "args",
@@ -65,9 +65,22 @@ const Dashboard = () => {
       const response = res.data;
       console.log(response, "to get response from api");
       setTotalData(response?.data?.data?.data);
-      console.log(new Date(parseFloat(response.data.data.data[0].endDate)*1000).toISOString()?.slice(0,-4),"endLeft")
-      setStartLeft(new Date(parseFloat(response.data.data.data[0].startDate)*1000).toISOString()?.slice(0,-5))
-      setEndLeft(new Date(parseFloat(response.data.data.data[0].endDate)*1000).toISOString()?.slice(0,-5))
+      console.log(
+        new Date(parseFloat(response.data.data.data[0].endDate) * 1000)
+          .toISOString()
+          ?.slice(0, -4),
+        "endLeft"
+      );
+      setStartLeft(
+        new Date(parseFloat(response.data.data.data[0].startDate) * 1000)
+          .toISOString()
+          ?.slice(0, -5)
+      );
+      setEndLeft(
+        new Date(parseFloat(response.data.data.data[0].endDate) * 1000)
+          .toISOString()
+          ?.slice(0, -5)
+      );
       setTotalStaking((response?.data?.data?.data).length);
     } catch (err) {
       console.log(err, "err");
@@ -115,13 +128,12 @@ const Dashboard = () => {
   //   return () => clearInterval(interval);
   // }, [startLeft, endLeft]);
 
-
   return (
     <>
-     {/* <div>
+      {/* <div>
       {timeLeft.days} days, {timeLeft.hours} hours, {timeLeft.minutes} minutes, {timeLeft.seconds} seconds left
     </div> */}
-  
+
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={open}
@@ -220,26 +232,66 @@ const Dashboard = () => {
         <Modal.Body>
           <label htmlFor="duration">Duration</label>
           <input
-            type="text"
+            type="number"
             placeholder="duration"
+            // onWheel={handleOnWheel}
             onChange={(e) => setDuration(e.target.value)}
+            onFocus={(e) =>
+              e.target.addEventListener(
+                "wheel",
+                function (e) {
+                  e.preventDefault();
+                },
+                { passive: false }
+              )
+            }
+            onKeyDown={(e) => {
+              if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                e.preventDefault();
+              }
+            }}
+            onKeyUp={(e) => {
+              if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                e.preventDefault();
+              }
+            }}
           />
           <br />
           <label htmlFor="roi">Rate Of Interest</label>
           <input
-            type="text"
+            type="number"
             placeholder="rateOfInterest"
             onChange={(e) => setRoi(e.target.value)}
+            onFocus={(e) =>
+              e.target.addEventListener(
+                "wheel",
+                function (e) {
+                  e.preventDefault();
+                },
+                { passive: false }
+              )
+            }
+            onKeyDown={(e) => {
+              if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                e.preventDefault();
+              }
+            }}
+            onKeyUp={(e) => {
+              if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                e.preventDefault();
+              }
+            }}
           />
           <br />
-          <label htmlFor="startDate">Start Date</label>
+         
+          <label htmlFor="startDate">Start Date<span className="span"><button className="connect-wallet1">Submit</button></span></label>
           <input
             type="datetime-local"
             class="transaction-date"
             onChange={(e) => setStartDate(e.target.value)}
           />
           <br />
-          <label htmlFor="endDate"></label>
+          <label htmlFor="endDate">End Date<span className="span"><button className="connect-wallet1">Submit</button></span></label>
           <input
             type="datetime-local"
             class="transaction-date"
@@ -250,23 +302,80 @@ const Dashboard = () => {
           <br />
           <label htmlFor="minUser">Min User</label>
           <input
-            type="text"
+            type="number"
             placeholder="minUser"
             onChange={(e) => setMin(e.target.value)}
+            onFocus={(e) =>
+              e.target.addEventListener(
+                "wheel",
+                function (e) {
+                  e.preventDefault();
+                },
+                { passive: false }
+              )
+            }
+            onKeyDown={(e) => {
+              if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                e.preventDefault();
+              }
+            }}
+            onKeyUp={(e) => {
+              if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                e.preventDefault();
+              }
+            }}
           />{" "}
           <br />
           <label htmlFor="maxUser">Max User</label>
           <input
-            type="text"
+            type="number"
             placeholder="maxUser"
             onChange={(e) => setMax(e.target.value)}
+            onFocus={(e) =>
+              e.target.addEventListener(
+                "wheel",
+                function (e) {
+                  e.preventDefault();
+                },
+                { passive: false }
+              )
+            }
+            onKeyDown={(e) => {
+              if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                e.preventDefault();
+              }
+            }}
+            onKeyUp={(e) => {
+              if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                e.preventDefault();
+              }
+            }}
           />
           <br />
           <label htmlFor="total">Total Tokens</label>
           <input
-            type="text"
+            type="number"
             placeholder="totalTokens"
             onChange={(e) => setTotal(e.target.value)}
+            onFocus={(e) =>
+              e.target.addEventListener(
+                "wheel",
+                function (e) {
+                  e.preventDefault();
+                },
+                { passive: false }
+              )
+            }
+            onKeyDown={(e) => {
+              if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                e.preventDefault();
+              }
+            }}
+            onKeyUp={(e) => {
+              if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                e.preventDefault();
+              }
+            }}
           />
           <br />
         </Modal.Body>
